@@ -19,22 +19,22 @@ const TextContainerWrapper = styled.div`
 `;
 
 // default render ~ renders tooltip for overflowing content
-// function App() {
-//   return (
-//     <TooltipProvider>
-//       <TooltipDisplayer />
-//       <div className="App">
-//         <br />
-//         <div style={{ width: "120px" }}>
-//           {withTooltip(<TextContainer content={content} />, {
-//             // lineContent: content,
-//             contentPropsKey: "content"
-//           })}
-//         </div>
-//       </div>
-//     </TooltipProvider>
-//   );
-// }
+function App() {
+  return (
+    <TooltipProvider>
+      <TooltipDisplayer />
+      <div className="App">
+        <br />
+        <div style={{ width: "120px" }}>
+          {withTooltip(<TextContainer content={content} />, {
+            // lineContent: content,
+            contentPropsKey: "content"
+          })}
+        </div>
+      </div>
+    </TooltipProvider>
+  );
+}
 
 // listData render ~ renders a <ul> with <li>{listData[index]}</li> [Could be removed - use customComponent instead]
 // function App() {
@@ -54,21 +54,21 @@ const TextContainerWrapper = styled.div`
 // }
 
 // customComponent render ~ renders CustomComponent
-function App() {
-  return (
-    <TooltipProvider>
-      <TooltipDisplayer />
-      <div className="App">
-        <br />
-        <div style={{ width: "120px" }}>
-          {withTooltip(<TextContainer content={smallContent} />, {
-            customComponent: CustomComponent // pass as CustomComponent and NOT as <CustomComponent />
-          })}
-        </div>
-      </div>
-    </TooltipProvider>
-  );
-}
-const CustomComponent = () => <h2>Mother of God</h2>;
+// function App() {
+//   return (
+//     <TooltipProvider>
+//       <TooltipDisplayer />
+//       <div className="App">
+//         <br />
+//         <div style={{ width: "120px" }}>
+//           {withTooltip(<TextContainer content={smallContent} />, {
+//             customComponent: CustomComponent // pass as CustomComponent and NOT as <CustomComponent />
+//           })}
+//         </div>
+//       </div>
+//     </TooltipProvider>
+//   );
+// }
+// const CustomComponent = () => <h2>Mother of God</h2>;
 
 export default App;
