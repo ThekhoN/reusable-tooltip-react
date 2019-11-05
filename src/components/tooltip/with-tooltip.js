@@ -10,7 +10,7 @@ const offsetX = 0;
 /* 
 const tooltipOptions = {
     position: "bottom-right",
-    lineContent: "MY OWN MFKEN CONTENT", // pass your own content
+    lineContent: "MY OWN CONTENT", // pass your own content
     contentPropsKey: "content" // name of props of the ComposedComponent which holds the textContent(string) 
 };
 return (
@@ -90,6 +90,14 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
       }
       this.checkShouldHaveTooltip();
     }
+    getRenderContent = () => {
+    	if((ComposedComponent && typeof ComposedComponent === "string") || (ComposedComponent && typeof (ComposedComponent).toString() === "string")) {
+    		return ComposedComponent;
+    	}
+    	if(ComposedComponent && ComposedComponent.props && ComposedComponent.props.content) {
+    		return ComposedComponent.props.content;
+    	}
+    }
     render() {
       let contentWidthMeasurerStyle = {};
       if (tooltipOptions.fontSize) {
@@ -132,7 +140,7 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
                       (this.contentWidthMeasurerRef = contentWidthMeasurerRef)
                     }
                   >
-                    {ComposedComponent.props.content}
+                    {this.getRenderContent()}
                   </ContentWidthMeasurer>
                 </WithTooltipWrapper>
               );
@@ -149,7 +157,7 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
                 (this.contentWidthMeasurerRef = contentWidthMeasurerRef)
               }
             >
-              {ComposedComponent.props.content}
+              {this.getRenderContent()}
             </ContentWidthMeasurer>
           </React.Fragment>
         );
@@ -159,7 +167,14 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
   return <WithToolTip />;
 };
 
-const WithTooltipWrapper = styled.div``;
+const WithTooltipWrapper = styled.div`
+  &.should-have-tooltip {
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+`;
 
 const ContentWidthMeasurer = styled.span`
   visibility: hidden;

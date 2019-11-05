@@ -26,10 +26,16 @@ function App() {
       <div className="App">
         <br />
         <div style={{ width: "120px" }}>
-          {withTooltip(<TextContainer content={content} />, {
+          {/* {withTooltip(<TextContainer content={content} />, {
             // lineContent: content,
             contentPropsKey: "content"
-          })}
+          })} */}
+          {withTooltip(
+            content, 
+            {
+              lineContent: content,
+            }
+          )}
         </div>
       </div>
     </TooltipProvider>
