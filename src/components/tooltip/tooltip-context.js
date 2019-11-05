@@ -10,9 +10,7 @@ export const defaultTooltipState = {
     disabled: false,
     offsetLeft: 0,
     offsetTop: 0,
-    // position
     position: "",
-    // content
     listData: [],
     title: "",
     lineContent: "",

@@ -50,12 +50,14 @@ const TooltipDisplayer = () => {
           if (typeof tooltip.customComponent === "string") {
             return (
               <TooltipDisplayWrapper style={style}>
+                <TooltipArrow />
                 {tooltip.customComponent}
               </TooltipDisplayWrapper>
             );
           } else {
             return (
               <TooltipDisplayWrapper style={style}>
+                <TooltipArrow />
                 <tooltip.customComponent />
               </TooltipDisplayWrapper>
             );
@@ -63,6 +65,7 @@ const TooltipDisplayer = () => {
         } else if (tooltip.listData && tooltip.listData.length) {
           return (
             <TooltipDisplayWrapper style={style}>
+              <TooltipArrow />
               <ul>
                 {tooltip.listData.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -73,6 +76,7 @@ const TooltipDisplayer = () => {
         } else {
           return (
             <TooltipDisplayWrapper style={style}>
+              <TooltipArrow />
               {tooltip.lineContent}
             </TooltipDisplayWrapper>
           );
@@ -82,15 +86,50 @@ const TooltipDisplayer = () => {
   );
 };
 
+const TooltipArrow = styled.span`
+  position: relative;
+
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -22px;
+    right: -10px;
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-right: 1px solid #f2f2f2;
+    border-bottom: 1px solid #f2f2f2;
+    transform: rotate(-135deg);
+  }
+`
+
 const TooltipDisplayWrapper = styled.div`
-  position: fixed;
+  /* position: fixed;
   z-index: 999;
   top: 0;
   left: 0;
   border: 1px solid #ccc;
   border-radius: 3px;
   background: white;
-  padding: 0.3rem;
+  padding: 0.3rem; */
+
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  /* display: inline-flex; */
+  padding: 1rem;
+  border: 1px solid #f2f2f2;
+  background: white;
+  /* width: 100%;
+  min-width: 220px;
+  max-width: 320px; */
+  border-radius: 3px;
+  font-size: 12px;
+  z-index: 7;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.14902), 0 0 1px rgba(0, 0, 0, 0.04706);
+  font-weight: bold;
 `;
 
 export default TooltipDisplayer;

@@ -83,7 +83,8 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
       if (
         !tooltipOptions.customComponent &&
         !tooltipOptions.listData &&
-        !tooltipOptions.lineContent
+        !tooltipOptions.lineContent &&
+        !tooltipOptions.contentPropsKey
       ) {
         throw "You must pass one of the options customComponent OR listData OR lineContent while calling withTooltip";
       }
