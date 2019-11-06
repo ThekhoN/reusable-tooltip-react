@@ -64,11 +64,9 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
       updateTooltip(defaultTooltipState.tooltip);
     }
     checkShouldHaveTooltip() {
-      if (
-        this.contentWidthMeasurerRef &&
-        this.contentWidthMeasurerRef.parentNode.offsetWidth >
-          this.contentWidthMeasurerRef.offsetWidth
-      ) {
+      // added offset of 5px
+      // case wherein tooltip was showing despite the content being fully visible
+      if (this.contentWidthMeasurerRef && (this.contentWidthMeasurerRef.parentNode.offsetWidth + 5) > this.contentWidthMeasurerRef.offsetWidth) {
         this.setState({
           shouldHaveTooltip: false
         });
