@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components/macro";
 import { TooltipConsumer, defaultTooltipState } from "./tooltip-context";
 
-const offsetY = 30;
+const offsetY = 16; // 30
 const offsetX = 0;
 
 // we should be able to pass our own tooltipOptions at the time of render
@@ -89,12 +89,12 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
       this.checkShouldHaveTooltip();
     }
     getRenderContent = () => {
-    	if((ComposedComponent && typeof ComposedComponent === "string") || (ComposedComponent && typeof (ComposedComponent).toString() === "string")) {
-    		return ComposedComponent;
-    	}
-    	if(ComposedComponent && ComposedComponent.props && ComposedComponent.props.content) {
-    		return ComposedComponent.props.content;
-    	}
+      if ((ComposedComponent && typeof ComposedComponent === "string") || (ComposedComponent && typeof (ComposedComponent).toString() === "string")) {
+        return ComposedComponent;
+      }
+      if (ComposedComponent && ComposedComponent.props && ComposedComponent.props.content) {
+        return ComposedComponent.props.content;
+      }
     }
     render() {
       let contentWidthMeasurerStyle = {};
