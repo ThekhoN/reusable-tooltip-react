@@ -34,7 +34,6 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
     		windowPageXOffset = window.pageXOffset;
     		windowInnerWidth = window.innerWidth + windowPageXOffset;
         absolutePositionOfElementX = event.target.getBoundingClientRect().x + windowPageXOffset;
-        console.log("absolutePositionOfElementX/windowInnerWidth * 100: ", absolutePositionOfElementX/windowInnerWidth * 100);
     		// exceeds 90% of screen
     		if(absolutePositionOfElementX/windowInnerWidth * 100 > 75 /* 90 */ || absolutePositionOfElementX > windowInnerWidth) {
     			shouldHaveDynamicPositioning = true;
