@@ -7,12 +7,20 @@ const content = "What's up with that?";
 
 function App() {
   return (
-    <TooltipProvider>
-      <TooltipDisplayer />
-      <div style={{ width: "120px" }}>
-        {withTooltip(content, { lineContent: content })}
-      </div>
-    </TooltipProvider>
+    <React.Fragment>
+      <TooltipProvider>
+        <TooltipDisplayer />
+        <div style={{ width: "120px", position: "absolute", right: 0 }}>
+          {withTooltip(content, { lineContent: content })}
+        </div>
+      </TooltipProvider>
+      <TooltipProvider>
+        <TooltipDisplayer />
+        <div style={{ width: "120px" }}>
+          {withTooltip(content, { lineContent: content })}
+        </div>
+      </TooltipProvider>
+    </React.Fragment>
   );
 }
 

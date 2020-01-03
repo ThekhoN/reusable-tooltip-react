@@ -76,8 +76,8 @@ const TooltipDisplayer = () => {
         } else {
           return (
             <TooltipDisplayWrapper style={style}>
-              <TooltipArrow />
-              {tooltip.lineContent}
+              <TooltipArrow className={tooltip.type} />
+              <LineContentWrapper>{tooltip.lineContent}</LineContentWrapper>
             </TooltipDisplayWrapper>
           );
         }
@@ -86,15 +86,27 @@ const TooltipDisplayer = () => {
   );
 };
 
-const TooltipArrow = styled.span`
+const LineContentWrapper = styled.span`
+  white-space: nowrap;
+`;
+
+const TooltipArrow = styled.div`
   position: relative;
+
+  &.default:after {
+    left: -10px;
+  }
+
+  &.bottom-right:after {
+    right: -10px;
+  }
 
   &:after {
     content: "";
     display: block;
     position: absolute;
     top: -22px;
-    right: -10px;
+    /* right: -10px; */
     width: 12px;
     height: 12px;
     background: #ffffff;
@@ -102,23 +114,13 @@ const TooltipArrow = styled.span`
     border-bottom: 1px solid #f2f2f2;
     transform: rotate(-135deg);
   }
-`
+`;
 
 const TooltipDisplayWrapper = styled.div`
-  /* position: fixed;
-  z-index: 999;
-  top: 0;
-  left: 0;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  background: white;
-  padding: 0.3rem; */
-
   position: fixed;
   z-index: 999;
   top: 0;
   left: 0;
-  /* display: inline-flex; */
   padding: 1rem;
   border: 1px solid #f2f2f2;
   background: white;

@@ -21,9 +21,26 @@ return (
 const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
   class WithToolTip extends React.Component {
     state = {
-      shouldHaveTooltip: false
+      shouldHaveTooltip: false,
+      shouldHaveDynamicPositioning: true
     };
     handleMouseOver({ event, updateTooltip }) {
+      let absolutePositionOfElementX = 0;
+    	let windowInnerWidth = 0;
+    	let shouldHaveDynamicPositioning = false;
+    	let windowPageXOffset = 0; // scroll offset value
+    	if(this.state.shouldHaveDynamicPositioning) {
+    		// dynamic positioning ~ bottom-right
+    		windowPageXOffset = window.pageXOffset;
+    		windowInnerWidth = window.innerWidth + windowPageXOffset;
+        absolutePositionOfElementX = event.target.getBoundingClientRect().x + windowPageXOffset;
+        console.log("absolutePositionOfElementX/windowInnerWidth * 100: ", absolutePositionOfElementX/windowInnerWidth * 100);
+    		// exceeds 90% of screen
+    		if(absolutePositionOfElementX/windowInnerWidth * 100 > 75 /* 90 */ || absolutePositionOfElementX > windowInnerWidth) {
+    			shouldHaveDynamicPositioning = true;
+    		}
+    	}
+      
       const updatedMousePosY = event.clientY + offsetY;
       const updatedMousePosX = event.clientX + offsetX;
 
@@ -34,7 +51,8 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
           show: true,
           offsetLeft: updatedMousePosX,
           offsetTop: updatedMousePosY,
-          customComponent: tooltipOptions.customComponent
+          customComponent: tooltipOptions.customComponent,
+          type: shouldHaveDynamicPositioning ? "bottom-right" : "default"
         });
       } else if (
         tooltipOptions.listData &&
@@ -44,7 +62,8 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
           show: true,
           offsetLeft: updatedMousePosX,
           offsetTop: updatedMousePosY,
-          listData: tooltipOptions.listData
+          listData: tooltipOptions.listData,
+          type: shouldHaveDynamicPositioning ? "bottom-right" : "default"
         });
       } else {
         let lineContentString = tooltipOptions.lineContent;
@@ -54,9 +73,10 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
         }
         updateTooltip({
           show: true,
-          offsetLeft: updatedMousePosX,
+          offsetLeft: shouldHaveDynamicPositioning ? (absolutePositionOfElementX - (event.target.offsetWidth) - windowPageXOffset) : updatedMousePosX,
           offsetTop: updatedMousePosY,
-          lineContent: lineContentString || ""
+          lineContent: lineContentString || "",
+          type: shouldHaveDynamicPositioning ? "bottom-right" : "default"
         });
       }
     }
