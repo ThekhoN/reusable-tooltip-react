@@ -25,43 +25,53 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
       shouldHaveDynamicPositioning: true
     };
     handleMouseOver({ event, updateTooltip }) {
-      let absolutePositionOfElementX = 0;
-    	let windowInnerWidth = 0;
-    	let shouldHaveDynamicPositioning = false;
-    	let windowPageXOffset = 0; // scroll offset value
-    	if(this.state.shouldHaveDynamicPositioning) {
-    		// dynamic positioning ~ bottom-right
-    		windowPageXOffset = window.pageXOffset;
-    		windowInnerWidth = window.innerWidth + windowPageXOffset;
-        absolutePositionOfElementX = event.target.getBoundingClientRect().x + windowPageXOffset;
-    		// exceeds 90% of screen
-    		if(absolutePositionOfElementX/windowInnerWidth * 100 > 75 /* 90 */ || absolutePositionOfElementX > windowInnerWidth) {
-    			shouldHaveDynamicPositioning = true;
-    		}
-    	}
-      
       const updatedMousePosY = event.clientY + offsetY;
       const updatedMousePosX = event.clientX + offsetX;
 
+      let absolutePositionOfElementX = 0;
+      let windowInnerWidth = 0;
+      let shouldHaveDynamicPositioning = false;
+      let windowPageXOffset = 0; // scroll offset value
+      if (this.state.shouldHaveDynamicPositioning) {
+        // dynamic positioning ~ bottom-right
+        windowPageXOffset = window.pageXOffset;
+        windowInnerWidth = window.innerWidth + windowPageXOffset;
+        absolutePositionOfElementX = event.target.getBoundingClientRect().x + windowPageXOffset;
+
+        // handles the case wherein the hovered elements is located to the extreme right edge of the screen
+        if (absolutePositionOfElementX / windowInnerWidth * 100 > 65 || windowInnerWidth < 1024) {
+          shouldHaveDynamicPositioning = true;
+        }
+      }
+
+      const paddingForToolDisplayer = 34; // may vary based on styling of tooltipDisplayer, pass via props?
+      let idealXPositioning = absolutePositionOfElementX;
+      let adjustedXPosOffset = 0;
+      let actuaXPositioning = idealXPositioning + this.contentWidthMeasurerRef.offsetWidth;
+      // should the tooltipDisplayer overshoot the edge of the screen
+      if (actuaXPositioning > windowInnerWidth) {
+        const shouldStickToTheExtremeRightOfScreen = false;
+        // flag to position tooltipDisplayer at the edge of the screen
+        // otherwise position arrow of tooltipDisplayer at the center of hovered element
+        adjustedXPosOffset = (actuaXPositioning - windowInnerWidth);
+        if (shouldStickToTheExtremeRightOfScreen) {
+          adjustedXPosOffset += paddingForToolDisplayer;
+        } else {
+          adjustedXPosOffset += (event.target.offsetWidth / 2);
+        }
+      } else {
+        adjustedXPosOffset -= (event.target.offsetWidth / 2 - this.contentWidthMeasurerRef.offsetWidth)
+      }
+      let finalOffsetLeft = shouldHaveDynamicPositioning ? (idealXPositioning - (adjustedXPosOffset) - windowPageXOffset) : updatedMousePosX
+
       // priority
-      // customComponent > listData > lineContent
+      // customComponent > lineContent
       if (tooltipOptions.customComponent) {
         updateTooltip({
           show: true,
-          offsetLeft: updatedMousePosX,
+          offsetLeft: finalOffsetLeft,
           offsetTop: updatedMousePosY,
           customComponent: tooltipOptions.customComponent,
-          type: shouldHaveDynamicPositioning ? "bottom-right" : "default"
-        });
-      } else if (
-        tooltipOptions.listData &&
-        Array.isArray(tooltipOptions.listData)
-      ) {
-        updateTooltip({
-          show: true,
-          offsetLeft: updatedMousePosX,
-          offsetTop: updatedMousePosY,
-          listData: tooltipOptions.listData,
           type: shouldHaveDynamicPositioning ? "bottom-right" : "default"
         });
       } else {
@@ -70,9 +80,14 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
           lineContentString =
             ComposedComponent.props[tooltipOptions.contentPropsKey];
         }
+
+        if (shouldHaveDynamicPositioning) {
+          finalOffsetLeft += paddingForToolDisplayer;
+        }
+
         updateTooltip({
           show: true,
-          offsetLeft: shouldHaveDynamicPositioning ? (absolutePositionOfElementX - (event.target.offsetWidth) - windowPageXOffset) : updatedMousePosX,
+          offsetLeft: finalOffsetLeft,
           offsetTop: updatedMousePosY,
           lineContent: lineContentString || "",
           type: shouldHaveDynamicPositioning ? "bottom-right" : "default"
@@ -99,21 +114,53 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
       // make sure one of the vital options are passed
       if (
         !tooltipOptions.customComponent &&
-        !tooltipOptions.listData &&
         !tooltipOptions.lineContent &&
         !tooltipOptions.contentPropsKey
       ) {
-        throw "You must pass one of the options customComponent OR listData OR lineContent while calling withTooltip";
+        throw new Error("You must pass one of the options customComponent OR lineContent while calling withTooltip");
       }
       this.checkShouldHaveTooltip();
     }
     getRenderContent = () => {
+      // handle width calculation for customComponent
+      if (tooltipOptions && tooltipOptions.customComponent && typeof tooltipOptions.customComponent === "function") {
+        return <tooltipOptions.customComponent />
+      }
       if ((ComposedComponent && typeof ComposedComponent === "string") || (ComposedComponent && typeof (ComposedComponent).toString() === "string")) {
         return ComposedComponent;
       }
       if (ComposedComponent && ComposedComponent.props && ComposedComponent.props.content) {
         return ComposedComponent.props.content;
       }
+    }
+    handleRenderForShowingTooltip = ({ withToolTipClassName, tooltipProps, contentWidthMeasurerStyle }) => {
+      return (
+        <WithTooltipWrapper
+          className={withToolTipClassName}
+          onMouseOver={e => {
+            this.handleMouseOver({
+              event: e,
+              updateTooltip: tooltipProps.updateTooltip
+            });
+          }}
+          onMouseLeave={e => {
+            this.handleMouseLeave({
+              event: e,
+              updateTooltip: tooltipProps.updateTooltip
+            });
+          }}
+        >
+          {ComposedComponent}
+          <ContentWidthMeasurer
+            style={contentWidthMeasurerStyle}
+            ref={contentWidthMeasurerRef =>
+              (this.contentWidthMeasurerRef = contentWidthMeasurerRef)
+            }
+          >
+            {this.getRenderContent()}
+          </ContentWidthMeasurer>
+        </WithTooltipWrapper>
+      )
     }
     render() {
       let contentWidthMeasurerStyle = {};
@@ -127,43 +174,37 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
         : "";
 
       if (
-        this.state.shouldHaveTooltip ||
-        tooltipOptions.listData ||
-        tooltipOptions.customComponent
+        this.state.shouldHaveTooltip || tooltipOptions.customComponent
       ) {
-        return (
-          <TooltipConsumer>
-            {tooltipProps => {
-              return (
-                <WithTooltipWrapper
-                  className={withToolTipClassName}
-                  onMouseOver={e => {
-                    this.handleMouseOver({
-                      event: e,
-                      updateTooltip: tooltipProps.updateTooltip
-                    });
-                  }}
-                  onMouseLeave={e => {
-                    this.handleMouseLeave({
-                      event: e,
-                      updateTooltip: tooltipProps.updateTooltip
-                    });
-                  }}
-                >
-                  {ComposedComponent}
-                  <ContentWidthMeasurer
-                    style={contentWidthMeasurerStyle}
-                    ref={contentWidthMeasurerRef =>
-                      (this.contentWidthMeasurerRef = contentWidthMeasurerRef)
-                    }
-                  >
-                    {this.getRenderContent()}
-                  </ContentWidthMeasurer>
-                </WithTooltipWrapper>
-              );
-            }}
-          </TooltipConsumer>
-        );
+        if (!tooltipOptions.customComponent) {
+          return (
+            <TooltipConsumer>
+              {tooltipProps => {
+                return this.handleRenderForShowingTooltip({
+                  tooltipProps,
+                  withToolTipClassName,
+                  contentWidthMeasurerStyle
+                })
+              }}
+            </TooltipConsumer>
+          );
+        } else {
+          return (
+            <TooltipConsumer>
+              {tooltipProps => {
+                return (
+                  <div style={{ "display": "flex" }}>
+                    {this.handleRenderForShowingTooltip({
+                      tooltipProps,
+                      withToolTipClassName,
+                      contentWidthMeasurerStyle
+                    })}
+                  </div>
+                );
+              }}
+            </TooltipConsumer>
+          );
+        }
       } else {
         return (
           <React.Fragment>
@@ -186,7 +227,6 @@ const withToolTipHOC = (ComposedComponent, tooltipOptions) => {
 
 const WithTooltipWrapper = styled.div`
   &.should-have-tooltip {
-    display: block;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -202,3 +242,5 @@ const ContentWidthMeasurer = styled.span`
 `;
 
 export default withToolTipHOC;
+
+

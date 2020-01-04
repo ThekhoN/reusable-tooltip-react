@@ -50,29 +50,18 @@ const TooltipDisplayer = () => {
           if (typeof tooltip.customComponent === "string") {
             return (
               <TooltipDisplayWrapper style={style}>
-                <TooltipArrow />
+                <TooltipArrow className={tooltip.type} />
                 {tooltip.customComponent}
               </TooltipDisplayWrapper>
             );
           } else {
             return (
               <TooltipDisplayWrapper style={style}>
-                <TooltipArrow />
+                <TooltipArrow className={tooltip.type} />
                 <tooltip.customComponent />
               </TooltipDisplayWrapper>
             );
           }
-        } else if (tooltip.listData && tooltip.listData.length) {
-          return (
-            <TooltipDisplayWrapper style={style}>
-              <TooltipArrow />
-              <ul>
-                {tooltip.listData.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </TooltipDisplayWrapper>
-          );
         } else {
           return (
             <TooltipDisplayWrapper style={style}>
