@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@storybook/addon-info": "^5.3.12",
+    "prop-types": "^15.7.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-scripts": "3.2.0",
@@ -32,9 +34,11 @@
     ]
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^5.2.8",
+    "@storybook/addon-actions": "^5.3.12",
+    "@storybook/addon-knobs": "^5.3.12",
     "@storybook/addon-links": "^5.2.8",
-    "@storybook/addons": "^5.2.8",
+    "@storybook/addon-notes": "^5.3.12",
+    "@storybook/addons": "^5.3.12",
     "@storybook/react": "^5.2.8"
   }
 }
