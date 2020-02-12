@@ -2,12 +2,15 @@ import React from "react";
 import { ThemeProvider } from "styled-components";
 
 export const theme = {
+  theme: "light",
   colors: {
     link: "#08f",
     separator: "#d9d9d9",
     text: "#808080",
     textLight: "#929292",
-    error: "#e40000"
+    error: "#e40000",
+    lightGrey: "#ececec",
+    dark: "#171717"
   },
   fonts: {
     main: [
