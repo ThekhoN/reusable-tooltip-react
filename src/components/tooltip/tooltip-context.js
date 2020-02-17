@@ -20,29 +20,27 @@ export const defaultTooltipState = {
   }
 };
 
-export default class TooltipProvider extends React.Component {
-  state = {
-    ...defaultTooltipState
-  };
-  updateTooltip = payload => {
-    let updatedTooltipState = { ...this.state.tooltip };
+const TooltipProvider = (props) => {
+  const [tooltipState, setTooltipState] = React.useState(defaultTooltipState);
+
+  const updateTooltip = payload => {
+    let updatedTooltipState = { ...tooltipState };
     for (let key in payload) {
       updatedTooltipState[key] = payload[key];
     }
-    this.setState({
-      tooltip: updatedTooltipState
-    });
+    setTooltipState(updatedTooltipState);
   };
-  render() {
-    return (
-      <Provider
-        value={{
-          tooltip: this.state.tooltip,
-          updateTooltip: this.updateTooltip
-        }}
-      >
-        {this.props.children}
-      </Provider>
-    );
-  }
+
+  return (
+    <Provider
+      value={{
+        tooltip: tooltipState,
+        updateTooltip: updateTooltip
+      }}
+    >
+      {props.children}
+    </Provider>
+  );
 }
+
+export default TooltipProvider;
